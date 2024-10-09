@@ -1,12 +1,11 @@
 import torch
 import torch.optim as optim
 
-from src.image_operations import generate_white_noise_image
-
+from .image_operations import generate_white_noise_image
 from .loss import (
-    calculate_style_loss_for_layers,
     calculate_content_loss,
     calculate_mixed_loss,
+    calculate_style_loss_for_layers,
 )
 from .model_utils import get_features
 
@@ -19,7 +18,7 @@ def reconstruct_image(
     transform,
     loss_function,
     num_iteration,
-    lr,
+    learning_rate,
     generated_image_t=None,  # white noise image
     **loss_function_kwargs,  # depends on the type of reconstruction
 ):
@@ -27,7 +26,7 @@ def reconstruct_image(
         generated_image_t = generate_white_noise_image(
             width=WIDTH, height=HEIGHT, transform=transform
         )
-    optimizer = optim.Adam([generated_image_t], lr=lr)
+    optimizer = optim.Adam([generated_image_t], learning_rate=learning_rate)
 
     for i in range(num_iteration):
         optimizer.zero_grad()
@@ -54,7 +53,7 @@ def reconstruct_image_from_style(
     model,
     transform,
     num_iteration,
-    lr,
+    learning_rate,
     style_layers_weights=None,
     generated_image_t=None,
 ):
@@ -65,7 +64,7 @@ def reconstruct_image_from_style(
         transform=transform,
         loss_function=loss_function,
         num_iteration=num_iteration,
-        lr=lr,
+        learning_rate=learning_rate,
         generated_image_t=generated_image_t,
         features_2=style_features,
         style_layers=style_layers,
@@ -80,7 +79,7 @@ def reconstruct_image_from_content(
     model,
     transform,
     num_iteration,
-    lr,
+    learning_rate,
     generated_image_t=None,
 ):
     loss_function = calculate_content_loss
@@ -90,7 +89,7 @@ def reconstruct_image_from_content(
         transform=transform,
         loss_function=loss_function,
         num_iteration=num_iteration,
-        lr=lr,
+        learning_rate=learning_rate,
         generated_image_t=generated_image_t,
         features_2=content_features,
         content_layer=content_layer,
@@ -106,7 +105,7 @@ def reconstruct_image_from_content_style(
     model,
     transform,
     num_iteration,
-    lr,
+    learning_rate,
     content_weight,
     generated_image_t=None,
     style_layers_weights=None,
@@ -119,7 +118,7 @@ def reconstruct_image_from_content_style(
         transform=transform,
         loss_function=loss_function,
         num_iteration=num_iteration,
-        lr=lr,
+        learning_rate=learning_rate,
         generated_image_t=generated_image_t,
         content_features=content_features,
         style_features=style_features,
@@ -137,7 +136,7 @@ if __name__ == "__main__":
     from .image_operations import image_to_tensor, tensor_to_image
     from .model_utils import load_model
 
-    model, transform = load_model()
+    vgg_model, transform = load_model()
 
     # test style reconstruction
     style_image = Image.open("./data/starry_night.jpg")
@@ -146,10 +145,10 @@ if __name__ == "__main__":
     new_image_t = reconstruct_image_from_style(
         style_image_t=style_image_t,
         style_layers=[0],
-        model=model,
+        model=vgg_model,
         transform=transform,
         num_iteration=2,
-        lr=0.01,
+        learning_rate=0.01,
     )
     new_image = tensor_to_image(new_image_t)
 
@@ -160,10 +159,10 @@ if __name__ == "__main__":
     new_image_t = reconstruct_image_from_content(
         content_image_t=content_image_t,
         content_layer=0,
-        model=model,
+        model=vgg_model,
         transform=transform,
         num_iteration=2,
-        lr=0.01,
+        learning_rate=0.01,
     )
     new_image = tensor_to_image(new_image_t)
 
@@ -173,11 +172,11 @@ if __name__ == "__main__":
         style_image_t=style_image_t,
         content_layer=0,
         style_layers=list(range(4)),
-        model=model,
+        model=vgg_model,
         transform=transform,
         content_weight=0.1,
         num_iteration=1,
-        lr=0.01,
+        learning_rate=0.01,
     )
     new_image = tensor_to_image(new_image_t)
     new_image.show()
