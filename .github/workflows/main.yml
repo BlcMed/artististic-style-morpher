@@ -1,0 +1,22 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches:
+      - 'dev'
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: python linter
+        uses: sunnysid3up/python-linter@master
+        with:
+          source: "src"
+          mypy-options: "--ignore-missing-imports --show-error-codes"
+          isort-options: "--profile black"
+          pylint-options: "--rcfile=setup.cfg"
