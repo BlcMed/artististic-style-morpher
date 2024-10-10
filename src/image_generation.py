@@ -9,9 +9,6 @@ from .loss import (
 )
 from .model_utils import get_features
 
-WIDTH = 224
-HEIGHT = 224
-
 
 def reconstruct_image(
     model,
@@ -19,14 +16,19 @@ def reconstruct_image(
     loss_function,
     num_iteration,
     learning_rate,
+    generated_image_resolution=None,
     generated_image_t=None,  # white noise image
     **loss_function_kwargs,  # depends on the type of reconstruction
 ):
     if generated_image_t is None:
+        if generated_image_resolution is None:
+            width, height = 224, 224
+        else:
+            width, height = generated_image_resolution
         generated_image_t = generate_white_noise_image(
-            width=WIDTH, height=HEIGHT, transform=transform
+            width, height, transform=transform
         )
-    optimizer = optim.Adam([generated_image_t], learning_rate=learning_rate)
+    optimizer = optim.Adam([generated_image_t], lr=learning_rate)
 
     for i in range(num_iteration):
         optimizer.zero_grad()
@@ -54,6 +56,7 @@ def reconstruct_image_from_style(
     transform,
     num_iteration,
     learning_rate,
+    generated_image_resolution=None,
     style_layers_weights=None,
     generated_image_t=None,
 ):
@@ -65,6 +68,7 @@ def reconstruct_image_from_style(
         loss_function=loss_function,
         num_iteration=num_iteration,
         learning_rate=learning_rate,
+        generated_image_resolution=generated_image_resolution,
         generated_image_t=generated_image_t,
         features_2=style_features,
         style_layers=style_layers,
@@ -80,6 +84,7 @@ def reconstruct_image_from_content(
     transform,
     num_iteration,
     learning_rate,
+    generated_image_resolution=None,
     generated_image_t=None,
 ):
     loss_function = calculate_content_loss
@@ -90,6 +95,7 @@ def reconstruct_image_from_content(
         loss_function=loss_function,
         num_iteration=num_iteration,
         learning_rate=learning_rate,
+        generated_image_resolution=generated_image_resolution,
         generated_image_t=generated_image_t,
         features_2=content_features,
         content_layer=content_layer,
@@ -107,6 +113,7 @@ def reconstruct_image_from_content_style(
     num_iteration,
     learning_rate,
     content_weight,
+    generated_image_resolution=None,
     generated_image_t=None,
     style_layers_weights=None,
 ):
@@ -119,6 +126,7 @@ def reconstruct_image_from_content_style(
         loss_function=loss_function,
         num_iteration=num_iteration,
         learning_rate=learning_rate,
+        generated_image_resolution=generated_image_resolution,
         generated_image_t=generated_image_t,
         content_features=content_features,
         style_features=style_features,
