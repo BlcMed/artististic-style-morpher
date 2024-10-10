@@ -1,0 +1,19 @@
+streamlit:
+  title: "Articstic Style Morpher"
+  description: "Transfere the style of an image to an another!"
+  result_image_caption: "Result image"
+  transfer_style_button: "Apply transfer"
+
+model:
+  generated_image_resolution: [224, 224]
+  learning_rate: 0.01
+  num_iteration: 2000
+  content_layer: 2
+  style_layers: [0, 1, 2, 3, 4, 5]
+  content_weight: 0.95
+
+paths:
+  style_references: ./data/references/referencs/art_style/
+  style_references_tensors: ./data/tensors/art_style/
+  content_references: ./data/references/content_photographs/
+  content_references_tensors: ./data/tensors/content_photographs/
