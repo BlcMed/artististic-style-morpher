@@ -1,6 +1,6 @@
+from PIL import Image
 from torch import randn
 from torchvision import transforms
-from PIL import Image
 
 
 def read_image(image_path):

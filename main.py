@@ -1,9 +1,10 @@
 import streamlit as st
-from src.image_generation import reconstruct_image_from_content_style
-from src.image_operations import read_image, image_to_tensor, tensor_to_image
-from src.model_utils import load_model
+
 from config import config
 from src.data_manager import get_files
+from src.image_generation import reconstruct_image_from_content_style
+from src.image_operations import image_to_tensor, read_image, tensor_to_image
+from src.model_utils import load_model
 
 streamlit_config = config.get("streamlit")
 st.title(streamlit_config["title"])
