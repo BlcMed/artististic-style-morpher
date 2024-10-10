@@ -14,6 +14,13 @@ model:
   style_layers: [0, 1, 2, 3, 4, 5]
   content_weight: 0.95
 
+max_model_config:
+  learning_rate: 1.0
+  num_iteration: 5000
+  content_layer: 36
+  style_layer: 36
+  content_weight: 1.0
+
 paths:
   style_references: ./data/references/art_styles/
   style_references_tensors: ./data/tensors/art_styles/

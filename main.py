@@ -5,8 +5,6 @@ from src.model_utils import load_model
 from config import config
 from src.data_manager import get_files
 
-model_config = config.get("model")
-paths_config = config.get("paths")
 streamlit_config = config.get("streamlit")
 st.title(streamlit_config["title"])
 st.write(streamlit_config["description"])
@@ -16,6 +14,42 @@ if "model" not in st.session_state:
     st.session_state["model"] = vgg_model
     st.session_state["transform"] = transform
 
+
+model_config = config.get("model")
+# Model parameters tweaking in app
+max_model_config = config.get("max_model_config")
+st.sidebar.header("Model Configuration")
+content_weight = st.sidebar.slider(
+    "Content Weight",
+    0.0,
+    max_model_config["content_weight"],
+    model_config["content_weight"],
+)
+num_iteration = st.sidebar.slider(
+    "Number of Iterations",
+    1,
+    max_model_config["num_iteration"],
+    model_config["num_iteration"],
+)
+learning_rate = st.sidebar.slider(
+    "Learning Rate",
+    0.0,
+    max_model_config["learning_rate"],
+    model_config["learning_rate"],
+)
+content_layer = st.sidebar.slider(
+    "Content Layer", 0, max_model_config["content_layer"], model_config["content_layer"]
+)
+up_to_style_layer = st.sidebar.slider(
+    "Style Layers Up To",
+    0,
+    max_model_config["style_layer"],
+    model_config["style_layers"][-1],
+)
+style_layers = list(range(up_to_style_layer + 1))
+
+# path configurations
+paths_config = config.get("paths")
 default_style_images = get_files(paths_config["style_references"])
 col1, col2 = st.columns(2)
 
@@ -58,14 +92,14 @@ if st.button(streamlit_config["transfer_style_button"]):
             new_image_t = reconstruct_image_from_content_style(
                 content_image_t=content_image_t,
                 style_image_t=style_image_t,
-                content_layer=model_config["content_layer"],
-                style_layers=model_config["style_layers"],
+                content_layer=content_layer,
+                style_layers=style_layers,
                 model=model,
                 transform=transform,
                 generated_image_resolution=model_config["generated_image_resolution"],
-                content_weight=model_config["content_weight"],
-                num_iteration=model_config["num_iteration"],
-                learning_rate=model_config["learning_rate"],
+                content_weight=content_weight,
+                num_iteration=num_iteration,
+                learning_rate=learning_rate,
             )
             new_image = tensor_to_image(new_image_t)
 
