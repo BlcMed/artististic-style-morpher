@@ -1,5 +1,11 @@
 from torch import randn
 from torchvision import transforms
+from PIL import Image
+
+
+def read_image(image_path):
+    image = Image.open(image_path)
+    return image
 
 
 def image_to_tensor(image, transform, requires_grad=False):

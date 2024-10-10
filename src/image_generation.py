@@ -26,7 +26,7 @@ def reconstruct_image(
         generated_image_t = generate_white_noise_image(
             width=WIDTH, height=HEIGHT, transform=transform
         )
-    optimizer = optim.Adam([generated_image_t], learning_rate=learning_rate)
+    optimizer = optim.Adam([generated_image_t], lr=learning_rate)
 
     for i in range(num_iteration):
         optimizer.zero_grad()
