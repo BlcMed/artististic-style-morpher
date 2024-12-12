@@ -2,7 +2,10 @@ import streamlit as st
 
 from config import config
 from src.data_manager import get_files
-from src.image_generation import reconstruct_image_from_content_style
+from src.image_generation import (
+    reconstruct_image_from_content_style,
+    reconstruct_image_from_style,
+)
 from src.image_operations import image_to_tensor, read_image, tensor_to_image
 from src.model_utils import load_model
 
@@ -26,6 +29,7 @@ content_weight = st.sidebar.slider(
     max_model_config["content_weight"],
     model_config["content_weight"],
 )
+content_weight = 0.98
 num_iteration = st.sidebar.slider(
     "Number of Iterations",
     1,
@@ -90,6 +94,16 @@ if st.button(streamlit_config["transfer_style_button"]):
         content_image_t = image_to_tensor(content_image, transform=transform)
         style_image_t = image_to_tensor(style_image, transform=transform)
         with st.spinner("Generating the image ..."):
+            new_image_t = reconstruct_image_from_style(
+                style_image_t=style_image_t,
+                style_layers=style_layers,
+                model=model,
+                transform=transform,
+                num_iteration=num_iteration,
+                learning_rate=learning_rate,
+                generated_image_t=content_image_t,
+            )
+            """
             new_image_t = reconstruct_image_from_content_style(
                 content_image_t=content_image_t,
                 style_image_t=style_image_t,
@@ -102,6 +116,7 @@ if st.button(streamlit_config["transfer_style_button"]):
                 num_iteration=num_iteration,
                 learning_rate=learning_rate,
             )
+            """
             new_image = tensor_to_image(new_image_t)
 
         st.image(
