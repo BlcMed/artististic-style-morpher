@@ -69,5 +69,5 @@ def calculate_mixed_loss(
         style_layers=style_layers,
         style_layers_weights=style_layers_weights,
     )
-    total_loss = content_loss * content_weight + style_loss
+    total_loss = content_loss * content_weight + style_loss * (1 - content_weight)
     return total_loss
